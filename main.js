@@ -319,3 +319,21 @@ let unlockLoop = window.setInterval(function() {
 }, 1000)
 
 // --- BUILDINGS ---
+
+function getUpgradeCost(building, level){
+  const cost = [];
+    switch (building) {
+      case 'granary':
+        cost.append({wood: Math.round(10 * Math.pow(level, 1.73))})
+      break;
+      case 'woodShed':
+        cost.append({wood: Math.round(20 * Math.pow(level, 1.73))})
+      break;
+      case 'woodenHut':
+        cost.append({wood: Math.round(15 * Math.pow(level, 1.73))})
+      break;
+      default:
+        console.log('ERROR - building type not found!');
+    }
+  return cost;
+}

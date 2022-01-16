@@ -313,7 +313,7 @@ let unlockLoop = window.setInterval(function() {
       resource.unlocked = true;
     }
   })
-  if (gameData.resources.wood.amt > 5) {
+  if (gameData.resources.wood.amt >= 10) {
     document.getElementById('tabBuildings').style.display = "block";
   }
 }, 1000)

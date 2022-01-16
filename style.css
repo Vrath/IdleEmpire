@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200&display=swap');
+* {
+    box-sizing: border-box;
+}  
+body{
+    font-size: 20px;
+    font-family: 'Titillium Web', sans-serif;
+    background-color: #222;
+    color: whitesmoke;
+    margin: 0;
+    height: 100%;
+}
+.subpage{
+    width: 100%;
+    height: 100%;
+}
+.box{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.btn{
+    min-height: 90px;
+    max-height: 150px;
+    width: 235px;
+    border-radius: 15px;
+    border: 2px solid #444;
+    text-align: center;
+    cursor: pointer;
+    margin: 10px;
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.btn:hover{
+    background-color: gray;
+    color: black;
+    font-weight: 1000;
+}
+/* TEXT FORMATTING */
+h1 {
+    font-size: 40px;
+    text-shadow: 2px 2px 5px lightgray;
+    text-align: center;
+}
+h2{
+    margin: 0;
+    text-align: center;
+}
+h2:after, #popmanagement:after
+{
+    content:' ';
+    display:block;
+    border:1px solid gray;
+	margin:5px;
+}
+h3{
+    text-align: center;
+    margin: 0;
+}
+.btn p{
+    margin: 0;
+}
+
+/* STICKY NAVBAR */
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.sticky + .content {
+    padding-top: 60px;
+}
+
+#resourcebar{
+    padding: 5px;
+    float: left;
+    width: 20%;
+    height: 100%;
+}
+.res{
+    padding: 10px;
+}
+.res:nth-child(even) {
+    background-color: #2b2b2b;
+} 
+
+.main{
+    padding: 20px;
+    float: left;
+    width: 60%;
+    height: 100%;
+}
+.gameLog{
+    padding: 20px;
+    float: left;
+    height: 100%;
+    width: 20%;
+}
+
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.topnav a {
+    color: whitesmoke;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    display: table-cell;
+    cursor: pointer;
+  }
+
+.topnav a:hover {
+    background-color: darkgray;
+    color: black;
+    font-weight: 1000;
+}
+
+.topnav a.active {
+    background-color: crimson;
+    color: whitesmoke;
+}
+
+.topnav .icon {
+    display: none;
+}
+
+/* RESPONSIVE STUFF */
+/* for mobile phones */
+@media screen and (max-width: 600px) {
+    .topnav a:not(:first-child) {display: none;}
+    .topnav a.icon {
+        display: block;
+    }
+    .topnav.responsive {position: relative;}
+    .topnav.responsive a {
+        float: none;
+        display: block;
+        text-align: center;
+    }
+    #resourcebar, .main, .gameLog{
+        width: 100%;
+    }
+}
+/* for medium sized devices */
+@media screen and (min-width:600px) and (max-width:800px){
+    #resourcebar{
+        width: 35%;
+    }
+    .main{
+        width: 65%;
+    }
+    .gameLog{
+        width: 100%;
+    }
+}

@@ -13,11 +13,27 @@ let initialGameData = {
       level: 0,
       unlocked: false
     },
+    farm: {
+      level: 0,
+      unlocked: false
+    },
     houses: {
       level: 0,
       unlocked: false
     },
     woodShed: {
+      level: 0,
+      unlocked: false
+    },
+    lumberjacksHut: {
+      level: 0,
+      unlocked: false
+    },
+    warehouse: {
+      level: 0,
+      unlocked: false
+    },
+    stoneQuarry: {
       level: 0,
       unlocked: false
     }
@@ -33,7 +49,7 @@ let initialGameData = {
     },
     wood: {
       amt: 0,
-      max: 20,
+      max: 10,
       workers: 0,
       prog: 0,
       pps: 0,
@@ -91,20 +107,27 @@ const buildings = {
   granary: {
     buildingId: "granary",
     displayName: "Granary",
-    type: "food",
-    amount: 50
+    type: "food"
   },
   houses: {
     buildingId: "houses",
     displayName: "Houses",
-    type: "population",
-    amount: 5
+    type: "population"
   },
   woodShed: {
     buildingId: "woodShed",
     displayName: "Wood Shed",
-    type: "wood",
-    amount: 20
+    type: "wood"
+  },
+  farm: {
+    buildingId: "farm",
+    displayName: "Farm",
+    type: "food"
+  },
+  lumberjacksHut: {
+    buildingId: "lumberjacksHut",
+    displayName: "Granary",
+    type: "wood"
   }
 }
 
@@ -152,6 +175,7 @@ workerGen();
 resourceGen();
 buildingsGen();
 reset(true);
+checkUnlocks();
 
 //saving and loading
 function reset(confirmReset) {
@@ -162,10 +186,12 @@ function reset(confirmReset) {
   gameData = JSON.parse(JSON.stringify(initialGameData));
   Object.values(production).forEach(p =>{
     document.getElementById(p.resource).style.display = "none";
+    document.getElementById(p.resource + "Btn").style.display = "none";
   })
   Object.values(buildings).forEach(b =>{
     document.getElementById(b.buildingId + "Building").style.display = "none";
   })
+
   document.getElementById('tabBuildings').style.display = "none";
   document.getElementById('tabPopulation').style.display = "none";
   document.getElementById('tabResearch').style.display = "none";
@@ -173,6 +199,7 @@ function reset(confirmReset) {
   document.getElementById('gameLogContent').innerHTML = "<div></div>";
 
   document.getElementById('woodBtn').style.display = "flex";
+  document.getElementById('wood').style.display = "block";
   updateAll();
   tab("hearth");
 }
@@ -278,6 +305,7 @@ function workerGen() {
     let element = document.createElement("div");
     element.style.margin = "10px";
     element.style.width = "240px";
+    element.style.display = "none";
     element.resource = p.resource;
     element.innerHTML = `<h3 id="${p.workers}"></h3>
     <div class="btn" onclick="hire('${p.resource}', 1)" style="background-color: green; min-height: 60px; width:40%; float:left;">Hire</div>
@@ -368,64 +396,66 @@ let productionLoop = window.setInterval(function() {
 // --- UNLOCKING STUFF ---
 function unlockResource(resource){
   if (gameData.resources[resource].unlocked === false){
-    gameData.resources[resource].unlocked = true;
-    document.getElementById(resource).style.display = "block";
     gameLog("Unlocked new resource: " + production[resource].displayName + "!");
   }
+  gameData.resources[resource].unlocked = true;
+  document.getElementById(resource).style.display = "block";
 }
 
 function unlockBuilding(building){
   if (gameData.buildings[building].unlocked === false){
-    gameData.buildings[building].unlocked = true;
     gameLog("Unlocked new building: " + buildings[building].displayName + "!");
   }
+  gameData.buildings[building].unlocked = true;
+  document.getElementById(building + "Building").style.display = "flex";
+}
+
+function unlockTab(tabName){
+  document.getElementById(tabName).style.display = "table-cell";
+}
+
+function unlockBtn(btnName){
+  document.getElementById(btnName).style.display = "flex";
 }
 
 function checkUnlocks(){
-  //resources
-  Object.values(production).forEach(p =>{
-    let resource = gameData.resources[p.resource];
-    if (resource.amt > 0 || resource.unlocked === true){
-      document.getElementById(p.resource).style.display = "block";
-      if (resource.unlocked === false){
-        resource.unlocked = true;
-        gameLog(p.resource.displayName + " unlocked!");
-      }
-    }
-  })
-  //buildings
-  if (gameData.resources.wood.amt >= 5 || gameData.buildings.granary.unlocked == true) {
-    document.getElementById('tabBuildings').style.display = "block";
-    document.getElementById('granaryBuilding').style.display = "flex";
-    if (gameData.buildings.granary.unlocked === false){
-      gameData.buildings.granary.unlocked = true;
-      gameLog("Granary unlocked!");
-    }
+  if (gameData.resources.wood.amt >=5 || gameData.buildings.granary.unlocked === true){
+    unlockBuilding("granary");
+    unlockTab("tabBuildings");
   }
-  if (gameData.resources.wood.amt >= 10 || gameData.buildings.houses.unlocked == true) {
-    document.getElementById('housesBuilding').style.display = "flex";
-    if (gameData.buildings.houses.unlocked === false){
-      gameData.buildings.houses.unlocked = true;
-      gameLog("Houses unlocked!");
-    }
+  if (gameData.buildings.granary.level >= 1){
+    unlockBtn("foodBtn");
+    unlockResource("food");
   }
-  if (gameData.resources.wood.amt >= 15 || gameData.buildings.woodShed.unlocked == true) {
-    document.getElementById('woodShedBuilding').style.display = "flex";
-    if (gameData.buildings.woodShed.unlocked === false){
-      gameData.buildings.woodShed.unlocked = true;
-      gameLog("Wood Shed unlocked!");
-    }
+  if (gameData.resources.wood.amt >=10 || gameData.buildings.woodShed.unlocked === true){
+    unlockBuilding("woodShed");
+  }
+  if (gameData.resources.wood.amt >= 15 || gameData.buildings.houses.unlocked === true){
+    unlockBuilding("houses");
+    unlockTab("tabPopulation");
   }
 }
 
-// --- BUILDINGS ---
+// --- BUILDINGS & UPGRADES ---
 
 function upgradeBuilding(building){
   if (payIfPossible (getUpgradeCost(building))){
-  gameData.buildings[building].level++;
+    gameData.buildings[building].level ++;
+    let level = gameData.buildings[building].level;
+    switch (building) {
+      case 'granary':
+        gameData.resources.food.max += 10 * level;
+        if (level == 1){unlockResource("food"); unlockBtn("foodBtn")}
+      break;
+      case 'woodShed':
+        gameData.resources.wood.max += 10 * level;
+      break;
+      case 'houses':
+        gameData.population.max += 5;
+      break;
+  }
   updateAll();
   }
-  else {console.log("Missing resources!")};
 }
 
 function getUpgradeCost(building){
@@ -436,11 +466,13 @@ function getUpgradeCost(building){
         resources.push({'resource': 'wood', 'amount': Math.ceil(5 * Math.pow(level, 1.73))});
         if (level >= 3) {resources.push({'resource': 'stone', 'amount': Math.ceil(5 * Math.pow(level - 2, 1.73))});}
       break;
-      case 'houses':
-        resources.push({'resource': 'wood', 'amount': Math.ceil(10 * Math.pow(level, 1.73))});
-      break;
       case 'woodShed':
+        resources.push({'resource': 'wood', 'amount': gameData.resources.wood.max});
+        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(8 * Math.pow(level - 1, 1.73))});}
+      break;
+      case 'houses':
         resources.push({'resource': 'wood', 'amount': Math.ceil(15 * Math.pow(level, 1.73))});
+        if (level >= 1) {resources.push({'resource': 'stone', 'amount': Math.ceil(12 * Math.pow(level, 1.73))});}
       break;
       default:
         console.log('ERROR - building type not found!');

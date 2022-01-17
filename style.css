@@ -13,8 +13,24 @@ body{
     background-color: #222;
     color: whitesmoke;
     margin: 0;
-    height: 100%;
     cursor: default;
+}
+body, html {
+    height:  100%;
+    margin:  0px auto;
+    padding: 0px auto;
+}
+.wrapper{
+    height:     auto;
+    min-height: 100%;
+    margin:     0px auto;
+    padding:    0px auto;
+}
+.content{
+    height:     auto;
+    min-height: 100%;
+    margin:     0px auto;
+    padding:    0px auto;
 }
 /* TEXT FORMATTING */
 h1 {
@@ -22,7 +38,7 @@ h1 {
     text-shadow: 5px 5px 10px crimson;
     text-align: center;
     font-family: 'VT323', monospace;
-    margin: 10px;
+    margin: 0;
 }
 h2{
     font-family: 'VT323', monospace;
@@ -53,7 +69,6 @@ p{
     top: 0;
     width: 100%;
 }
-
 .sticky + .content {
     padding-top: 60px;
 }
@@ -62,7 +77,9 @@ p{
     padding: 5px;
     float: left;
     width: 20%;
-    height: 100%;
+    height:     auto;
+    min-height: 100%;
+    margin:     0px auto;
 }
 .res{
     padding: 10px;
@@ -147,7 +164,6 @@ p{
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
-    font-size: 17px;
     display: table-cell;
     cursor: pointer;
   }

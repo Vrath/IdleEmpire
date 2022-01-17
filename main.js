@@ -421,8 +421,7 @@ function checkUnlocks(){
 // --- BUILDINGS ---
 
 function upgradeBuilding(building){
-  getUpgradeCost(building);
-  if (payIfPossible (resources)){
+  if (payIfPossible (getUpgradeCost(building))){
   gameData.buildings[building].level++;
   updateAll();
   }
@@ -450,11 +449,11 @@ function getUpgradeCost(building){
 }
 
 function hasResource(resource) {
-  return gameData.resources[resource].amt >= resource.amount;
+  return gameData.resources[resource.resource].amt >= resource.amount;
 }
 
 function payResource(resource) {
-  return gameData.resources[resource].amt -= resource.amount;
+  return gameData.resources[resource.resource].amt -= resource.amount;
 }
 
 function payResources(resources) {
@@ -464,7 +463,12 @@ function payResources(resources) {
 }
 
 function hasResources(resources){
-  return resources.every(hasResource);
+  for (const resource of resources){
+    if (!hasResource(resource)){
+      return false;
+    }
+  }
+  return true;
 }
 
 function payIfPossible(resources){

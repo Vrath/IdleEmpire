@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body onmousedown="return false" onselectstart="return false">
+<body>
     <div class="wrapper">
     <div class="header"><h1>Idle Empire</h1></div>
     <div class="topnav" id="topMenu">
@@ -23,6 +23,8 @@
 
     <div class="content">
         <div id="resourcebar">
+            <h2>Resources</h2>
+            <div id="resourceBarContents"></div>
         </div>
 
         <div class="main">
@@ -55,7 +57,7 @@
 
             <div id="buildings" class="subpage">
                 <h2>Buildings</h2>
-                <div class="box">
+                <div class="box" id="buildingsList">
 
                 </div>
             </div>
@@ -70,6 +72,9 @@
         </div>
         <div class="gameLog">
             <h2>Game log</h2>
+            <div id="gameLogContent">
+
+            </div>
         </div>
 
     </div>

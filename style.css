@@ -1,6 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200&family=VT323&display=swap');
 * {
     box-sizing: border-box;
+    user-select: none; /* Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
 }  
 body{
     font-size: 20px;
@@ -8,6 +13,68 @@ body{
     background-color: #222;
     color: whitesmoke;
     margin: 0;
+    height: 100%;
+    cursor: default;
+}
+/* TEXT FORMATTING */
+h1 {
+    font-size: 96px;
+    text-shadow: 5px 5px 10px crimson;
+    text-align: center;
+    font-family: 'VT323', monospace;
+    margin: 10px;
+}
+h2{
+    font-family: 'VT323', monospace;
+    font-size: 48px;
+    margin: 0;
+    text-align: center;
+}
+h2:after, #popmanagement:after
+{
+    content:' ';
+    display:block;
+    border:1px solid gray;
+	margin:5px;
+}
+h3{
+    text-align: center;
+    margin: 0;
+}
+.btn p{
+    margin: 0;
+}
+p{
+    margin: 0;
+}
+/* STICKY NAVBAR */
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.sticky + .content {
+    padding-top: 60px;
+}
+/* RESOURCE BAR */
+#resourcebar{
+    padding: 5px;
+    float: left;
+    width: 20%;
+    height: 100%;
+}
+.res{
+    padding: 10px;
+}
+.res:nth-child(even) {
+    background-color: #2b2b2b;
+} 
+/* MAIN */
+.main{
+    padding: 5px;
+    float: left;
+    width: 60%;
     height: 100%;
 }
 .subpage{
@@ -39,68 +106,34 @@ body{
     color: black;
     font-weight: 1000;
 }
-/* TEXT FORMATTING */
-h1 {
-    font-size: 40px;
-    text-shadow: 2px 2px 5px lightgray;
-    text-align: center;
+.building{
+    width: 320px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
-h2{
-    margin: 0;
-    text-align: center;
+.building.btn{
+    max-height:60px;
 }
-h2:after, #popmanagement:after
-{
-    content:' ';
-    display:block;
-    border:1px solid gray;
-	margin:5px;
-}
-h3{
-    text-align: center;
-    margin: 0;
-}
-.btn p{
-    margin: 0;
-}
-
-/* STICKY NAVBAR */
-.sticky {
-    position: fixed;
-    top: 0;
-    width: 100%;
-}
-
-.sticky + .content {
-    padding-top: 60px;
-}
-
-#resourcebar{
+/* GAME LOG */
+.gameLog{
     padding: 5px;
     float: left;
-    width: 20%;
     height: 100%;
+    width: 20%;
 }
-.res{
+#gameLogContent{
+    min-height: 240px;
+}
+.message{
     padding: 10px;
 }
-.res:nth-child(even) {
+.message:nth-child(even){
     background-color: #2b2b2b;
-} 
-
-.main{
-    padding: 20px;
-    float: left;
-    width: 60%;
-    height: 100%;
 }
-.gameLog{
-    padding: 20px;
-    float: left;
-    height: 100%;
-    width: 20%;
-}
-
+/* NAVBAR */
 .topnav {
     overflow: hidden;
     background-color: #333;
@@ -161,5 +194,49 @@ h3{
     }
     .gameLog{
         width: 100%;
+    }
+}
+
+/* RAINBOW */
+.rainbow{
+    animation: rainbow 5s linear;
+    animation-iteration-count: infinite;
+}
+@keyframes rainbow{
+    100%,0%{
+        background-color: rgb(255,0,0);
+    }
+    8%{
+        background-color: rgb(255,127,0);
+    }
+    16%{
+        background-color: rgb(255,255,0);
+    }
+    25%{
+        background-color: rgb(127,255,0);
+    }
+    33%{
+        background-color: rgb(0,255,0);
+    }
+    41%{
+        background-color: rgb(0,255,127);
+    }
+    50%{
+        background-color: rgb(0,255,255);
+    }
+    58%{
+        background-color: rgb(0,127,255);
+    }
+    66%{
+        background-color: rgb(0,0,255);
+    }
+    75%{
+        background-color: rgb(127,0,255);
+    }
+    83%{
+        background-color: rgb(255,0,255);
+    }
+    91%{
+        background-color: rgb(255,0,127);
     }
 }

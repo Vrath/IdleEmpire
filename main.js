@@ -8,6 +8,20 @@ let initialGameData = {
     workers: 0,
     nextCost: 10
   },
+  buildings: {
+    granary: {
+      level: 0,
+      unlocked: false
+    },
+    houses: {
+      level: 0,
+      unlocked: false
+    },
+    woodShed: {
+      level: 0,
+      unlocked: false
+    }
+  },
   resources: {
     food: {
       amt: 0,
@@ -33,12 +47,6 @@ let initialGameData = {
       pps: 0,
       unlocked: false
     }
-  },
-  buildings: {
-    granary: 0,
-    woodShed: 0,
-    woodenHut: 0,
-    stoneYard: 0
   }
 };
 
@@ -81,21 +89,23 @@ const production = {
 
 const buildings = {
   granary: {
-    name: "Granary",
+    buildingId: "granary",
+    displayName: "Granary",
     type: "food",
     amount: 50
   },
-  woodShed: {
-    name: "Wood Shed",
-    type: "wood",
-    amount: 20
-  },
-  woodenHut: {
-    name: "Wooden Hut",
+  houses: {
+    buildingId: "houses",
+    displayName: "Houses",
     type: "population",
     amount: 5
   },
-  
+  woodShed: {
+    buildingId: "woodShed",
+    displayName: "Wood Shed",
+    type: "wood",
+    amount: 20
+  }
 }
 
 
@@ -140,6 +150,8 @@ tab("hearth");
 buttonGen();
 workerGen();
 resourceGen();
+buildingsGen();
+reset(true);
 
 //saving and loading
 function reset(confirmReset) {
@@ -151,14 +163,19 @@ function reset(confirmReset) {
   Object.values(production).forEach(p =>{
     document.getElementById(p.resource).style.display = "none";
   })
+  Object.values(buildings).forEach(b =>{
+    document.getElementById(b.buildingId + "Building").style.display = "none";
+  })
   document.getElementById('tabBuildings').style.display = "none";
   document.getElementById('tabPopulation').style.display = "none";
   document.getElementById('tabResearch').style.display = "none";
 
+  document.getElementById('gameLogContent').innerHTML = "<div></div>";
+
   document.getElementById('woodBtn').style.display = "flex";
   updateAll();
+  tab("hearth");
 }
-reset(true);
   
 let saveGameLoop = window.setInterval(function() {
   localStorage.setItem("idleEmpireSave", JSON.stringify(gameData))
@@ -190,6 +207,18 @@ function updateAll() {
     n = parseFloat(n.toFixed(2));
     document.getElementById(p.pps).innerHTML = "Production: " + n + "/s";
   })
+
+  Object.values(buildings).forEach(b =>{
+    document.getElementById(b.buildingId + "Name").innerHTML = `<h3>${b.displayName} - level ${gameData.buildings[b.buildingId].level}</h3>`;
+    document.getElementById(b.buildingId + "Costs").innerHTML = "";
+    Object.values(getUpgradeCost(b.buildingId, gameData.buildings[b.buildingId].level + 1)).forEach(r =>{
+      let element = document.createElement("span");
+      element.innerHTML = production[r.resource].displayName + ": "+ r.amount + "<br>";
+      document.getElementById(b.buildingId + "Costs").appendChild(element);
+    })
+  })
+ 
+  checkUnlocks();
 }
 
 function percentify(val1, val2){
@@ -210,7 +239,8 @@ function action(action){
     }
     else {updateAll();}    
   }
-  if (gameData.resources[action].amt >= gameData.resources[action].max){updateAll();}
+  if (gameData.resources[action].amt >= gameData.resources[action].max)
+    {updateAll();}
   }
 
 // --- DYNAMIC GENERATION ---
@@ -233,6 +263,10 @@ function buttonGen() {
       action(target.resource);
       if (gameData.resources[target.resource].amt > 0) {
       document.getElementById(target.resource).style.display = "block";
+        if (gameData.resources[target.resource].unlocked === false){
+          gameData.resources[target.resource].unlocked = true;
+          gameLog("New resource unlocked!");
+        }
       }
     }
   });
@@ -242,18 +276,39 @@ function buttonGen() {
 function workerGen() {
   Object.values(production).forEach(p =>{
     let element = document.createElement("div");
-      element.style.margin = "10px";
-      element.style.width = "240px";
-      element.resource = p.resource;
-      element.innerHTML = `<h3 id="${p.workers}"></h3>
-      <div class="btn" onclick="hire('${p.resource}', 1)" style="background-color: green; min-height: 60px; width:40%; float:left;">Hire</div>
-      <div class="btn" onclick="hire('${p.resource}', -1)" style="background-color: crimson; min-height: 60px; width:40%; float:right;">Fire</div>
-      <p id="${p.pps}"></p>`;
-      document.getElementById("workerList").appendChild(element);
+    element.style.margin = "10px";
+    element.style.width = "240px";
+    element.resource = p.resource;
+    element.innerHTML = `<h3 id="${p.workers}"></h3>
+    <div class="btn" onclick="hire('${p.resource}', 1)" style="background-color: green; min-height: 60px; width:40%; float:left;">Hire</div>
+    <div class="btn" onclick="hire('${p.resource}', -1)" style="background-color: crimson; min-height: 60px; width:40%; float:right;">Fire</div>
+    <p id="${p.pps}"></p>`;
+    document.getElementById("workerList").appendChild(element);
   });
 }
 
-//building buttons gen
+//buildings gen
+function buildingsGen() {
+  Object.values(buildings).forEach(b =>{
+    let element = document.createElement("div");
+    element.classList.add("building");
+    element.id = b.buildingId + "Building";
+    element.buildingType = b.buildingId;
+    element.innerHTML = `<h3 id="${b.buildingId}Name">${b.name} - level 0</h3>
+    <div class="btn buildingBtn" id="${b.buildingId}Btn"><h4>Upgrade</h4></div>
+    <p id="${b.buildingId}Costs"></p>`;
+    document.getElementById("buildingsList").appendChild(element);
+
+    document.getElementById(b.buildingId + "Building").style.display = "none";
+  })
+  document.addEventListener("click", event => {
+    let target = event.target.closest(".buildingBtn");
+    if (target) {
+      upgradeBuilding(target.parentNode.buildingType);
+    }
+  })
+}
+
 
 //resource bar gen
 function resourceGen() {
@@ -261,9 +316,17 @@ function resourceGen() {
     let element = document.createElement("div");
       element.id = p.resource;
       element.classList.add("res");
-      document.getElementById("resourcebar").appendChild(element);
+      document.getElementById("resourceBarContents").appendChild(element);
       document.getElementById(p.resource).style.display = "none";
   })
+}
+
+//game log alerts
+function gameLog(message) {
+  let element = document.createElement("div");
+  element.classList.add("message");
+  element.innerHTML = `<p>${message}</p>`;
+  document.getElementById("gameLogContent").firstChild.prepend(element);
 }
 
 // --- POPULATION ---
@@ -303,37 +366,111 @@ let productionLoop = window.setInterval(function() {
 )}, 1000)
 
 // --- UNLOCKING STUFF ---
+function unlockResource(resource){
+  if (gameData.resources[resource].unlocked === false){
+    gameData.resources[resource].unlocked = true;
+    document.getElementById(resource).style.display = "block";
+    gameLog("Unlocked new resource: " + production[resource].displayName + "!");
+  }
+}
 
-let unlockLoop = window.setInterval(function() {
-  
+function unlockBuilding(building){
+  if (gameData.buildings[building].unlocked === false){
+    gameData.buildings[building].unlocked = true;
+    gameLog("Unlocked new building: " + buildings[building].displayName + "!");
+  }
+}
+
+function checkUnlocks(){
+  //resources
   Object.values(production).forEach(p =>{
     let resource = gameData.resources[p.resource];
-    if (resource.amt > 0 && resource.unlocked === false){
+    if (resource.amt > 0 || resource.unlocked === true){
       document.getElementById(p.resource).style.display = "block";
-      resource.unlocked = true;
+      if (resource.unlocked === false){
+        resource.unlocked = true;
+        gameLog(p.resource.displayName + " unlocked!");
+      }
     }
   })
-  if (gameData.resources.wood.amt >= 10) {
+  //buildings
+  if (gameData.resources.wood.amt >= 5 || gameData.buildings.granary.unlocked == true) {
     document.getElementById('tabBuildings').style.display = "block";
+    document.getElementById('granaryBuilding').style.display = "flex";
+    if (gameData.buildings.granary.unlocked === false){
+      gameData.buildings.granary.unlocked = true;
+      gameLog("Granary unlocked!");
+    }
   }
-}, 1000)
+  if (gameData.resources.wood.amt >= 10 || gameData.buildings.houses.unlocked == true) {
+    document.getElementById('housesBuilding').style.display = "flex";
+    if (gameData.buildings.houses.unlocked === false){
+      gameData.buildings.houses.unlocked = true;
+      gameLog("Houses unlocked!");
+    }
+  }
+  if (gameData.resources.wood.amt >= 15 || gameData.buildings.woodShed.unlocked == true) {
+    document.getElementById('woodShedBuilding').style.display = "flex";
+    if (gameData.buildings.woodShed.unlocked === false){
+      gameData.buildings.woodShed.unlocked = true;
+      gameLog("Wood Shed unlocked!");
+    }
+  }
+}
 
 // --- BUILDINGS ---
 
-function getUpgradeCost(building, level){
-  const cost = [];
+function upgradeBuilding(building){
+  getUpgradeCost(building);
+  if (payIfPossible (resources)){
+  gameData.buildings[building].level++;
+  updateAll();
+  }
+  else {console.log("Missing resources!")};
+}
+
+function getUpgradeCost(building){
+  let level = gameData.buildings[building].level + 1;
+  const resources = [];
     switch (building) {
       case 'granary':
-        cost.append({wood: Math.round(10 * Math.pow(level, 1.73))})
+        resources.push({'resource': 'wood', 'amount': Math.ceil(5 * Math.pow(level, 1.73))});
+        if (level >= 3) {resources.push({'resource': 'stone', 'amount': Math.ceil(5 * Math.pow(level - 2, 1.73))});}
+      break;
+      case 'houses':
+        resources.push({'resource': 'wood', 'amount': Math.ceil(10 * Math.pow(level, 1.73))});
       break;
       case 'woodShed':
-        cost.append({wood: Math.round(20 * Math.pow(level, 1.73))})
-      break;
-      case 'woodenHut':
-        cost.append({wood: Math.round(15 * Math.pow(level, 1.73))})
+        resources.push({'resource': 'wood', 'amount': Math.ceil(15 * Math.pow(level, 1.73))});
       break;
       default:
         console.log('ERROR - building type not found!');
     }
-  return cost;
+  return resources;
+}
+
+function hasResource(resource) {
+  return gameData.resources[resource].amt >= resource.amount;
+}
+
+function payResource(resource) {
+  return gameData.resources[resource].amt -= resource.amount;
+}
+
+function payResources(resources) {
+  for (const resource of resources){
+    payResource(resource);
+  }
+}
+
+function hasResources(resources){
+  return resources.every(hasResource);
+}
+
+function payIfPossible(resources){
+  if (hasResources(resources)){
+    payResources(resources)
+    return true;
+  }
+  return false;
 }

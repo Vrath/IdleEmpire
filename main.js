@@ -1,10 +1,12 @@
 "use strict";
 
+document.getElementById('version').innerText = "0.05"
+
 let gameData;
 let initialGameData = {
   population: {
     amt: 0,
-    max: 5,
+    max: 0,
     workers: 0,
     nextCost: 10
   },
@@ -107,27 +109,32 @@ const buildings = {
   granary: {
     buildingId: "granary",
     displayName: "Granary",
-    type: "food"
-  },
-  houses: {
-    buildingId: "houses",
-    displayName: "Houses",
-    type: "population"
+    type: "food",
+    description: "Upgrading this building increases your max amount of food."
   },
   woodShed: {
     buildingId: "woodShed",
     displayName: "Wood Shed",
-    type: "wood"
+    type: "wood",
+    description: "Upgrading this building increases your max amount of wood."
+  },
+  houses: {
+    buildingId: "houses",
+    displayName: "Houses",
+    type: "population",
+    description: "Upgrading this building increases your maximum population."
   },
   farm: {
     buildingId: "farm",
     displayName: "Farm",
-    type: "food"
+    type: "food",
+    description: "Upgrading this building lets your farmers produce food more effectively."
   },
   lumberjacksHut: {
     buildingId: "lumberjacksHut",
     displayName: "Granary",
-    type: "wood"
+    type: "wood",
+    description: "Upgrading this building lets your lumberjacks produce wood more effectively."
   }
 }
 
@@ -136,9 +143,9 @@ const buildings = {
 function topnavMenu() {
   var x = document.getElementById("topMenu");
   if (x.className === "topnav") {
-    x.className += " responsive";
+    x.classList.add("responsive");
   } else {
-    x.className = "topnav";
+    x.classList.remove("responsive");
   }
 };
 
@@ -411,7 +418,7 @@ function unlockBuilding(building){
 }
 
 function unlockTab(tabName){
-  document.getElementById(tabName).style.display = "table-cell";
+  document.getElementById(tabName).style.display = "";
 }
 
 function unlockBtn(btnName){
@@ -467,12 +474,16 @@ function getUpgradeCost(building){
         if (level >= 3) {resources.push({'resource': 'stone', 'amount': Math.ceil(5 * Math.pow(level - 2, 1.73))});}
       break;
       case 'woodShed':
-        resources.push({'resource': 'wood', 'amount': gameData.resources.wood.max});
+        resources.push({'resource': 'wood', 'amount': Math.round(gameData.resources.wood.max * 0.945) + 1});
         if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(8 * Math.pow(level - 1, 1.73))});}
       break;
       case 'houses':
         resources.push({'resource': 'wood', 'amount': Math.ceil(15 * Math.pow(level, 1.73))});
-        if (level >= 1) {resources.push({'resource': 'stone', 'amount': Math.ceil(12 * Math.pow(level, 1.73))});}
+        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(12 * Math.pow(level - 1, 1.73))});}
+      break;
+      case 'farm':
+        resources.push({'resource': 'wood', 'amount': Math.ceil(15 * Math.pow(level, 1.73))});
+        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(12 * Math.pow(level - 1, 1.73))});}
       break;
       default:
         console.log('ERROR - building type not found!');

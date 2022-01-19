@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrapper">
-    <div class="header"><h1>Idle Empire</h1></div>
+<div class="box flow-column">
+    <div class="row header">
+    <h1>Idle Empire</h1>
     <div class="topnav" id="topMenu">
         <a href="javascript:void(0);" class="icon" onclick="topnavMenu()">
         <i class="fa fa-bars"></i></a>
@@ -19,12 +20,15 @@
         <a id="tabResearch" onclick="tab('research')">Research</a>
         <a id="tabReset" onclick="reset()">Reset game</a>
     </div>
+    </div>
+    <div class="row content">
         <div id="resourcebar">
             <h2>Resources</h2>
             <div id="resourceBarContents"></div>
         </div>
 
-        <div class="main">
+        
+        <div class="notresourcebar"><div class="main">
             <div id="hearth" class="subpage">
                 <h2>Hearth</h2>
                 <div class="box" id="resourcePage">
@@ -68,12 +72,13 @@
 
         </div>
         <div class="gameLog">
-            <h2>Game log</h2>
+            <h2>Game Log</h2>
             <div id="gameLogContent">
-
             </div>
-        </div>
-
+        </div></div>
+    </div>
+    <div class="row footer">
+    <p style="font-family: 'VT323'">Ide Empire pre-alpha v. <span id="version"></span> - with<text style="color: red;"> <3 </text> by Vrath</p>
     </div>
 </div>
 <script src="main.js" charset="utf-8" type="text/javascript"></script>

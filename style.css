@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geo:ital@0;1&family=Titillium+Web:wght@200&family=VT323&display=swap');
+
 * {
     box-sizing: border-box;
     user-select: none; /* Chrome and Opera */
@@ -7,7 +8,12 @@
    -moz-user-select: none; /* Firefox */
    -ms-user-select: none; /* Internet Explorer/Edge */
 }  
-body{
+
+html,
+body {
+    height:  100%;
+    margin:  0px auto;
+    padding: 0px auto;
     font-size: 20px;
     font-family: 'Titillium Web', sans-serif;
     background-color: #222;
@@ -15,36 +21,46 @@ body{
     margin: 0;
     cursor: default;
 }
-body, html {
-    height:  100%;
-    margin:  0px auto;
-    padding: 0px auto;
-}
-.wrapper{
+
+.box {
+    display: flex;
     height:     auto;
     min-height: 100%;
     margin:     0px auto;
     padding:    0px auto;
 }
-.content{
-    height:     auto;
-    min-height: 100%;
-    margin:     0px auto;
-    padding:    0px auto;
+.flow-column{
+    flex-flow: column;
 }
+
+.box .row.header {
+    flex: 0 1 auto;
+}
+
+.box .row.content {
+  flex: 1 1 auto;
+}
+
+.box .row.footer {
+  flex: 0 1 40px;
+  text-align: center;
+}
+
 /* TEXT FORMATTING */
+
 h1 {
     font-size: 96px;
-    text-shadow: 5px 5px 10px crimson;
     text-align: center;
-    font-family: 'VT323', monospace;
-    margin: 0;
+    font-family: 'Geo', sans-serif;
+    margin: 20px;
+    text-shadow: 5px 5px 10px black;
 }
 h2{
-    font-family: 'VT323', monospace;
+    font-family: 'Geo', sans-serif;
     font-size: 48px;
     margin: 0;
     text-align: center;
+    text-shadow: 5px 5px 10px black;
 }
 h2:after, #popmanagement:after
 {
@@ -54,11 +70,10 @@ h2:after, #popmanagement:after
 	margin:5px;
 }
 h3{
-    text-align: center;
+    font-size: 32px;
+    font-family: 'Geo', sans-serif;
     margin: 0;
-}
-.btn p{
-    margin: 0;
+    text-shadow: 5px 5px 10px black;
 }
 p{
     margin: 0;
@@ -72,6 +87,52 @@ p{
 .sticky + .content {
     padding-top: 60px;
 }
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+    background-size: 1800% 1800%;
+    -webkit-animation: rainbow 120s ease infinite;
+    -z-animation: rainbow 120s ease infinite;
+    -o-animation: rainbow 120s ease infinite;
+    animation: rainbow 120s ease infinite;
+    -webkit-box-shadow: 0px 0px 32px 8px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 0px 32px 8px rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 0px 32px 8px rgba(0, 0, 0, 0.5);
+    text-shadow: 5px 5px 10px black;
+}
+
+.topnav a {
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    display: table-cell;
+    cursor: pointer;
+    font-family: 'Geo', sans-serif;
+    font-weight: bolder;
+    font-size: 28px;
+    text-shadow: 1 1 1px white;
+}
+
+.topnav a:hover {
+    background-color:rgba(0, 0, 0, 0.5);
+    color: whitesmoke;
+    -webkit-box-shadow: 0px 0px 32px 0px rgba(0, 0, 0, 1);
+    -moz-box-shadow: 0px 0px 32px 0px rgba(0, 0, 0, 1);
+    box-shadow: 0px 0px 32px 0px rgba(0, 0, 0, 1);
+}
+
+.topnav a.active {
+    color: whitesmoke;
+}
+
+.topnav .icon {
+    display: none;
+}
 /* RESOURCE BAR */
 #resourcebar{
     padding: 5px;
@@ -80,6 +141,7 @@ p{
     height:     auto;
     min-height: 100%;
     margin:     0px auto;
+    overflow: auto;
 }
 .res{
     padding: 10px;
@@ -124,16 +186,13 @@ p{
     font-weight: 1000;
 }
 .building{
-    width: 320px;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    width: 50%;
+    min-width: 320px;
 }
-.building.btn{
-    max-height:60px;
+.buildingBtn{
+    float: right;
 }
+
 /* GAME LOG */
 .gameLog{
     padding: 5px;
@@ -143,6 +202,7 @@ p{
 }
 #gameLogContent{
     min-height: 240px;
+    overflow: auto;
 }
 .message{
     padding: 10px;
@@ -150,39 +210,6 @@ p{
 .message:nth-child(even){
     background-color: #2b2b2b;
 }
-/* NAVBAR */
-.topnav {
-    overflow: hidden;
-    background-color: #333;
-    display: table;
-    table-layout: fixed;
-    width: 100%;
-}
-
-.topnav a {
-    color: whitesmoke;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    display: table-cell;
-    cursor: pointer;
-  }
-
-.topnav a:hover {
-    background-color: darkgray;
-    color: black;
-    font-weight: 1000;
-}
-
-.topnav a.active {
-    background-color: crimson;
-    color: whitesmoke;
-}
-
-.topnav .icon {
-    display: none;
-}
-
 /* RESPONSIVE STUFF */
 /* for mobile phones */
 @media screen and (max-width: 600px) {
@@ -190,7 +217,9 @@ p{
     .topnav a.icon {
         display: block;
     }
-    .topnav.responsive {position: relative;}
+    .topnav.responsive {
+        position: relative;
+    }
     .topnav.responsive a {
         float: none;
         display: block;
@@ -199,26 +228,69 @@ p{
     #resourcebar, .main, .gameLog{
         width: 100%;
     }
+    .building{
+        width: 100%;
+    }
 }
 /* for medium sized devices */
-@media screen and (min-width:600px) and (max-width:800px){
+@media screen and (min-width:600px) and (max-width:1024px){
     #resourcebar{
         width: 35%;
     }
-    .main{
+    .notresourcebar{
         width: 65%;
+        float: right;
+    }
+    .main{
+        width: 100%;
     }
     .gameLog{
         width: 100%;
     }
+    .building{
+        width: 100%;
+    }
 }
 
-/* RAINBOW */
-.rainbow{
-    animation: rainbow 5s linear;
-    animation-iteration-count: infinite;
+@keyframes rainbowshadow{
+    100%,0%{
+        text-shadow: 5px 5px 10px rgb(255,0,0);
+    }
+    8%{
+        text-shadow: 5px 5px 10px rgb(255,127,0);
+    }
+    16%{
+        text-shadow: 5px 5px 10px rgb(255,255,0);
+    }
+    25%{
+        text-shadow: 5px 5px 10px rgb(127,255,0);
+    }
+    33%{
+        text-shadow: 5px 5px 10px rgb(0,255,0);
+    }
+    41%{
+        text-shadow: 5px 5px 10px rgb(0,255,127);
+    }
+    50%{
+        text-shadow: 5px 5px 10px rgb(0,255,255);
+    }
+    58%{
+        text-shadow: 5px 5px 10px rgb(0,127,255);
+    }
+    66%{
+        text-shadow: 5px 5px 10px rgb(0,0,255);
+    }
+    75%{
+        text-shadow: 5px 5px 10px rgb(127,0,255);
+    }
+    83%{
+        text-shadow: 5px 5px 10px rgb(255,0,255);
+    }
+    91%{
+        text-shadow: 5px 5px 10px rgb(255,0,127);
+    }
 }
-@keyframes rainbow{
+@keyframes rainbowbg{
     100%,0%{
         background-color: rgb(255,0,0);
     }
@@ -255,4 +327,24 @@ p{
     91%{
         background-color: rgb(255,0,127);
     }
+}
+@-webkit-keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+@-moz-keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+@-o-keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+@keyframes rainbow { 
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
 }

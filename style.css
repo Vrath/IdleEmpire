@@ -21,7 +21,9 @@ body {
     margin: 0;
     cursor: default;
 }
-
+div{
+    border: 1px dotted blue;
+}
 .box {
     display: flex;
     height:     auto;
@@ -39,6 +41,10 @@ body {
 
 .box .row.content {
   flex: 1 1 auto;
+  height:     auto;
+  min-height: 100%;
+  display: flex;
+  width: 100%;
 }
 
 .box .row.footer {
@@ -46,6 +52,25 @@ body {
   text-align: center;
 }
 
+.subpage{
+    height:     auto;
+    min-height: 100%;
+    margin:     0px auto;
+    padding:    0px auto;
+    display: flex;
+    flex-direction: column;
+}
+.pageContent{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+h2 + .pageContent{
+    height:     auto;
+    min-height: 100%;
+    margin:     0px auto;
+    padding:    0px auto;
+}
 /* TEXT FORMATTING */
 
 h1 {
@@ -61,6 +86,7 @@ h2{
     margin: 0;
     text-align: center;
     text-shadow: 5px 5px 10px black;
+    width: 100%;
 }
 h2:after, #popmanagement:after
 {
@@ -84,7 +110,7 @@ p{
     top: 0;
     width: 100%;
 }
-.sticky + .content {
+.sticky + .content{
     padding-top: 60px;
 }
 .topnav {
@@ -93,12 +119,12 @@ p{
     display: table;
     table-layout: fixed;
     width: 100%;
-    background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+    background: linear-gradient(124deg,rgb(255,0,0), rgb(255,127,0),rgb(255,255,0),rgb(127,255,0),rgb(0,255,0),rgb(0,255,127),rgb(0,255,255),rgb(0,127,255),rgb(0,0,255), rgb(127,0,255), rgb(255,0,255), rgb(255,0,127), rgb(255,0,0));
     background-size: 1800% 1800%;
-    -webkit-animation: rainbow 120s ease infinite;
-    -z-animation: rainbow 120s ease infinite;
-    -o-animation: rainbow 120s ease infinite;
-    animation: rainbow 120s ease infinite;
+    -webkit-animation: rainbow 180s ease infinite;
+    -z-animation: rainbow 180s ease infinite;
+    -o-animation: rainbow 180s ease infinite;
+    animation: rainbow 180s ease infinite;
     -webkit-box-shadow: 0px 0px 32px 8px rgba(0, 0, 0, 0.5);
     -moz-box-shadow: 0px 0px 32px 8px rgba(0, 0, 0, 0.5);
     box-shadow: 0px 0px 32px 8px rgba(0, 0, 0, 0.5);
@@ -140,7 +166,6 @@ p{
     width: 20%;
     height:     auto;
     min-height: 100%;
-    margin:     0px auto;
     overflow: auto;
 }
 .res{
@@ -149,21 +174,32 @@ p{
 .res:nth-child(even) {
     background-color: #2b2b2b;
 } 
+.notresourcebar{
+    width: 80%; 
+    display: flex;
+    height:     auto;
+    min-height: 100%;
+    margin:     0px auto;
+    padding:    0px auto;
+}
 /* MAIN */
 .main{
     padding: 5px;
     float: left;
-    width: 60%;
-    height: 100%;
+    width: 80%;
+    height:     auto;
+    min-height: 100%;
+    margin:     0px auto;
+    padding:    0px auto;
+    display: flex;
+    flex-wrap: wrap;
 }
 .subpage{
     width: 100%;
-    height: 100%;
-}
-.box{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    height:     auto;
+    min-height: 100%;
+    margin:     0px auto;
+    padding:    0px auto;
 }
 .btn{
     min-height: 90px;
@@ -252,82 +288,6 @@ p{
     }
 }
 
-@keyframes rainbowshadow{
-    100%,0%{
-        text-shadow: 5px 5px 10px rgb(255,0,0);
-    }
-    8%{
-        text-shadow: 5px 5px 10px rgb(255,127,0);
-    }
-    16%{
-        text-shadow: 5px 5px 10px rgb(255,255,0);
-    }
-    25%{
-        text-shadow: 5px 5px 10px rgb(127,255,0);
-    }
-    33%{
-        text-shadow: 5px 5px 10px rgb(0,255,0);
-    }
-    41%{
-        text-shadow: 5px 5px 10px rgb(0,255,127);
-    }
-    50%{
-        text-shadow: 5px 5px 10px rgb(0,255,255);
-    }
-    58%{
-        text-shadow: 5px 5px 10px rgb(0,127,255);
-    }
-    66%{
-        text-shadow: 5px 5px 10px rgb(0,0,255);
-    }
-    75%{
-        text-shadow: 5px 5px 10px rgb(127,0,255);
-    }
-    83%{
-        text-shadow: 5px 5px 10px rgb(255,0,255);
-    }
-    91%{
-        text-shadow: 5px 5px 10px rgb(255,0,127);
-    }
-}
-@keyframes rainbowbg{
-    100%,0%{
-        background-color: rgb(255,0,0);
-    }
-    8%{
-        background-color: rgb(255,127,0);
-    }
-    16%{
-        background-color: rgb(255,255,0);
-    }
-    25%{
-        background-color: rgb(127,255,0);
-    }
-    33%{
-        background-color: rgb(0,255,0);
-    }
-    41%{
-        background-color: rgb(0,255,127);
-    }
-    50%{
-        background-color: rgb(0,255,255);
-    }
-    58%{
-        background-color: rgb(0,127,255);
-    }
-    66%{
-        background-color: rgb(0,0,255);
-    }
-    75%{
-        background-color: rgb(127,0,255);
-    }
-    83%{
-        background-color: rgb(255,0,255);
-    }
-    91%{
-        background-color: rgb(255,0,127);
-    }
-}
 @-webkit-keyframes rainbow {
     0%{background-position:0% 82%}
     50%{background-position:100% 19%}

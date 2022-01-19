@@ -1,6 +1,6 @@
 "use strict";
 
-document.getElementById('version').innerText = "0.05"
+document.getElementById('version').innerText = "0.06"
 
 let gameData;
 let initialGameData = {
@@ -173,7 +173,7 @@ function tab(tab) {
   document.getElementById("population").style.display = "none"
   document.getElementById("buildings").style.display = "none"
   document.getElementById("research").style.display = "none"
-  document.getElementById(tab).style.display = "inline-block"
+  document.getElementById(tab).style.display = "flex"
 }
 tab("hearth");
 
@@ -230,10 +230,12 @@ function updateAll() {
   Object.values(production).forEach(p =>{
     //resource count
     let amt = gameData.resources[p.resource].amt;
+    let max = gameData.resources[p.resource].max;
+    if (amt > max){amt = max}
     amt = amt.toFixed(0);
     document.getElementById(p.resource).innerHTML = `${p.displayName}: <span style="float: right">${amt}/${gameData.resources[p.resource].max}</span>`;
     //gathering progress
-    document.getElementById(p.progId).innerHTML = percentify(gameData.resources[p.resource].prog, production[p.resource].progReq);
+    //document.getElementById(p.progId).innerHTML = percentify(gameData.resources[p.resource].prog, production[p.resource].progReq);
     //workers
     document.getElementById(p.workers).innerHTML = production[p.resource].workers + ": " + gameData.resources[p.resource].workers;
     //production per second
@@ -263,19 +265,8 @@ function percentify(val1, val2){
 }
 
 function action(action){
-  const currentAction = action;
-  if (gameData.resources[action].amt +1 <= gameData.resources[action].max){
-    gameData.resources[action].prog++;
-    if (gameData.resources[action].prog >= production[action].progReq){
-      gameData.resources[action].amt++;
-      updateAll();
-      gameData.resources[action].prog = 0;
-    }
-    else {updateAll();}    
-  }
-  if (gameData.resources[action].amt >= gameData.resources[action].max)
-    {updateAll();}
-  }
+  gameData.resources[action].amt++;
+}
 
 // --- DYNAMIC GENERATION ---
 
@@ -286,7 +277,8 @@ function buttonGen() {
     element.classList.add("btn");
     element.classList.add("actionBtn");
     element.resource = p.resource;
-    element.innerHTML = `<h3>${p.buttonName}</h3><p id="${p.progId}">0/${p.progReq}</p>`;
+    element.innerHTML = `<h3>${p.buttonName}</h3>`;
+    //<p id="${p.progId}">0/${p.progReq}</p>`;
     document.getElementById("resourcePage").appendChild(element);
     element.id = p.buttonId;
     document.getElementById(p.buttonId).style.display = "none";
@@ -295,6 +287,7 @@ function buttonGen() {
     let target = event.target.closest(".actionBtn");
     if (target) {
       action(target.resource);
+      updateAll();
       if (gameData.resources[target.resource].amt > 0) {
       document.getElementById(target.resource).style.display = "block";
         if (gameData.resources[target.resource].unlocked === false){
@@ -393,9 +386,6 @@ let productionLoop = window.setInterval(function() {
     let res = gameData.resources[p.resource];
     res.pps = res.workers / p.progReq;
     res.amt += res.pps;
-    if (res.amt > res.max){
-      res.amt = res.max;
-    }
     updateAll();
   }
 )}, 1000)
@@ -485,11 +475,9 @@ function getUpgradeCost(building){
         resources.push({'resource': 'wood', 'amount': Math.ceil(15 * Math.pow(level, 1.73))});
         if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(12 * Math.pow(level - 1, 1.73))});}
       break;
-      default:
-        console.log('ERROR - building type not found!');
     }
   return resources;
-}
+  }
 
 function hasResource(resource) {
   return gameData.resources[resource.resource].amt >= resource.amount;
@@ -516,7 +504,7 @@ function hasResources(resources){
 
 function payIfPossible(resources){
   if (hasResources(resources)){
-    payResources(resources)
+    payResources(resources);
     return true;
   }
   return false;

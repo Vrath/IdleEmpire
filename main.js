@@ -1,6 +1,7 @@
 "use strict";
 
-document.getElementById('version').innerText = "0.06"
+document.getElementById('version').innerText = "0.0.7"
+// (9+X) ^ 2 / 100 * log10(9+X)
 
 let gameData;
 let initialGameData = {
@@ -8,7 +9,8 @@ let initialGameData = {
     amt: 0,
     max: 0,
     workers: 0,
-    nextCost: 10
+    nextCost: 10,
+    foodUsage: 0
   },
   buildings: {
     granary: {
@@ -73,56 +75,47 @@ const production = {
   food: {
     buttonName: "Gather food",
     buttonId: "foodBtn",
-    actionText: "Gathering food",
-    progId: "foodProg",
     displayName: "Food",
     resource: "food",
     progReq: 1,
     workers: "Farmers",
-    pps: "ppsFood"
+    pps: "ppsFood",
+    prodBuilding: "farm"
   },
   wood: {
     buttonName: "Chop wood",
     buttonId: "woodBtn",
-    actionText: "Chopping wood",
-    progId: "woodProg",
     displayName: "Wood",
     resource: "wood",
     progReq: 3,
     workers: "Lumberjacks",
-    pps: "ppsWood"
+    pps: "ppsWood",
+    prodBuilding: "lumberjacksHut"
   },
   stone: {
     buttonName: "Mine stone",
     buttonId: "stoneBtn",
-    actionText: "Mining stone",
-    progId: "stoneProg",
     displayName: "Stone",
     resource: "stone",
     progReq: 5,
     workers: "Miners",
-    pps: "ppsStone"
+    pps: "ppsStone",
+    prodBuilding: "stoneQuarry"
   }
 };
 
 const buildings = {
-  granary: {
-    buildingId: "granary",
-    displayName: "Granary",
-    type: "food",
-    description: "Upgrading this building increases your max amount of food."
-  },
-  woodShed: {
-    buildingId: "woodShed",
-    displayName: "Wood Shed",
-    type: "wood",
-    description: "Upgrading this building increases your max amount of wood."
-  },
   houses: {
     buildingId: "houses",
     displayName: "Houses",
     type: "population",
     description: "Upgrading this building increases your maximum population."
+  },
+  granary: {
+    buildingId: "granary",
+    displayName: "Granary",
+    type: "food",
+    description: "Upgrading this building increases your max amount of food."
   },
   farm: {
     buildingId: "farm",
@@ -130,11 +123,29 @@ const buildings = {
     type: "food",
     description: "Upgrading this building lets your farmers produce food more effectively."
   },
+  woodShed: {
+    buildingId: "woodShed",
+    displayName: "Wood Shed",
+    type: "wood",
+    description: "Upgrading this building increases your max amount of wood."
+  },
   lumberjacksHut: {
     buildingId: "lumberjacksHut",
-    displayName: "Granary",
+    displayName: "Lumberjack's Hut",
     type: "wood",
     description: "Upgrading this building lets your lumberjacks produce wood more effectively."
+  },
+  warehouse: {
+    buildingId: "warehouse",
+    displayName: "Warehouse",
+    type: "stone",
+    description: "Upgrading this building increases your max amount of stone."
+  },
+  stoneQuarry: {
+    buildingId: "stoneQuarry",
+    displayName: "Stone Quarry",
+    type: "stone",
+    description: "Upgrading this building lets your stone miners produce stone more effectively."
   }
 }
 
@@ -213,7 +224,7 @@ function reset(confirmReset) {
   
 let saveGameLoop = window.setInterval(function() {
   localStorage.setItem("idleEmpireSave", JSON.stringify(gameData))
-}, 10000)
+}, 5000)
   
 let savegame = JSON.parse(localStorage.getItem("idleEmpireSave"))
   if (savegame !== null) {
@@ -226,6 +237,10 @@ let savegame = JSON.parse(localStorage.getItem("idleEmpireSave"))
 function updateAll() {
   document.getElementById("pop").innerHTML = "Population: " + gameData.population.amt + "/" + gameData.population.max;
   document.getElementById("popCost").innerHTML = "Cost: " + gameData.population.nextCost + " food";
+  let foodUsage = gameData.population.amt * Math.log10(9 + gameData.population.amt);
+  foodUsage.toFixed(2);
+  gameData.population.foodUsage = foodUsage;
+  document.getElementById("foodUsage").innerHTML = "Food usage: " + foodUsage + "/s";
 
   Object.values(production).forEach(p =>{
     //resource count
@@ -264,10 +279,6 @@ function percentify(val1, val2){
   }).format(val1 / val2);
 }
 
-function action(action){
-  gameData.resources[action].amt++;
-}
-
 // --- DYNAMIC GENERATION ---
 
 //button gen
@@ -286,15 +297,15 @@ function buttonGen() {
   document.addEventListener("click", event => {
     let target = event.target.closest(".actionBtn");
     if (target) {
-      action(target.resource);
-      updateAll();
+      gameData.resources[target.resource].amt++;
       if (gameData.resources[target.resource].amt > 0) {
-      document.getElementById(target.resource).style.display = "block";
+      document.getElementById(target.resource).style.display = "";
         if (gameData.resources[target.resource].unlocked === false){
           gameData.resources[target.resource].unlocked = true;
           gameLog("New resource unlocked!");
         }
       }
+      updateAll();
     }
   });
 }
@@ -306,10 +317,12 @@ function workerGen() {
     element.style.margin = "10px";
     element.style.width = "240px";
     element.style.display = "none";
+    element.classList.add = "worker";
     element.resource = p.resource;
+    element.id = p.resource + "Worker"
     element.innerHTML = `<h3 id="${p.workers}"></h3>
-    <div class="btn" onclick="hire('${p.resource}', 1)" style="background-color: green; min-height: 60px; width:40%; float:left;">Hire</div>
-    <div class="btn" onclick="hire('${p.resource}', -1)" style="background-color: crimson; min-height: 60px; width:40%; float:right;">Fire</div>
+    <div class="btn" onclick="hire('${p.resource}', 1)" style="background-color: green; height: 40px; width:40%; float:left;">Hire</div>
+    <div class="btn" onclick="hire('${p.resource}', -1)" style="background-color: crimson; height: 40px; width:40%; float:right;">Fire</div>
     <p id="${p.pps}"></p>`;
     document.getElementById("workerList").appendChild(element);
   });
@@ -319,11 +332,13 @@ function workerGen() {
 function buildingsGen() {
   Object.values(buildings).forEach(b =>{
     let element = document.createElement("div");
-    element.classList.add("building");
+    element.classList.add("building", "box", "flow-column");
     element.id = b.buildingId + "Building";
     element.buildingType = b.buildingId;
-    element.innerHTML = `<h3 id="${b.buildingId}Name">${b.name} - level 0</h3>
-    <div class="btn buildingBtn" id="${b.buildingId}Btn"><h4>Upgrade</h4></div>
+    element.innerHTML = `<div class="row header">
+    <h3 id="${b.buildingId}Name">${b.name} - level 0</h3>
+    <div class="btn buildingBtn" id="${b.buildingId}Btn">Upgrade</div>
+    </div>
     <p id="${b.buildingId}Costs"></p>`;
     document.getElementById("buildingsList").appendChild(element);
 
@@ -332,7 +347,7 @@ function buildingsGen() {
   document.addEventListener("click", event => {
     let target = event.target.closest(".buildingBtn");
     if (target) {
-      upgradeBuilding(target.parentNode.buildingType);
+      upgradeBuilding(target.parentNode.parentNode.buildingType);
     }
   })
 }
@@ -384,7 +399,7 @@ function hire(type, amt){
 let productionLoop = window.setInterval(function() {
   Object.values(production).forEach(p =>{
     let res = gameData.resources[p.resource];
-    res.pps = res.workers / p.progReq;
+    res.pps = res.workers / p.progReq * Math.log10(9 + gameData.buildings[p.prodBuilding].level);
     res.amt += res.pps;
     updateAll();
   }
@@ -412,7 +427,11 @@ function unlockTab(tabName){
 }
 
 function unlockBtn(btnName){
-  document.getElementById(btnName).style.display = "flex";
+  document.getElementById(btnName).style.display = "";
+}
+
+function unlockWorker(workerName){
+  document.getElementById(workerName + "Worker").style.display = "";
 }
 
 function checkUnlocks(){
@@ -429,7 +448,16 @@ function checkUnlocks(){
   }
   if (gameData.resources.wood.amt >= 15 || gameData.buildings.houses.unlocked === true){
     unlockBuilding("houses");
+  }
+  if (gameData.buildings.houses.level >= 1){
     unlockTab("tabPopulation");
+  }
+  if (gameData.population.amt >= 1 || gameData.buildings.farm.unlocked === true){
+    unlockBuilding("farm");
+  }
+  if(gameData.buildings.farm.level >= 1){
+    unlockWorker("food");
+    unlockBuilding("lumberjacksHut");
   }
 }
 
@@ -450,6 +478,15 @@ function upgradeBuilding(building){
       case 'houses':
         gameData.population.max += 5;
       break;
+      case 'farm':
+        if (level == 1){unlockWorker("food")}
+      break;
+      case 'lumberjacksHut':
+        if (level == 1){unlockWorker("wood")}
+      break;
+      case '':
+
+      break;
   }
   updateAll();
   }
@@ -465,15 +502,27 @@ function getUpgradeCost(building){
       break;
       case 'woodShed':
         resources.push({'resource': 'wood', 'amount': Math.round(gameData.resources.wood.max * 0.945) + 1});
-        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(8 * Math.pow(level - 1, 1.73))});}
+        if (level >= 3) {resources.push({'resource': 'stone', 'amount': Math.ceil(6 * Math.pow(level - 2, 1.73))});}
       break;
       case 'houses':
         resources.push({'resource': 'wood', 'amount': Math.ceil(15 * Math.pow(level, 1.73))});
-        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(12 * Math.pow(level - 1, 1.73))});}
+        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(7 * Math.pow(level - 1, 1.73))});}
       break;
       case 'farm':
-        resources.push({'resource': 'wood', 'amount': Math.ceil(15 * Math.pow(level, 1.73))});
-        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(12 * Math.pow(level - 1, 1.73))});}
+        resources.push({'resource': 'wood', 'amount': Math.ceil(20 * Math.pow(level, 1.73))});
+        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(8 * Math.pow(level - 1, 1.73))});}
+      break;
+      case 'lumberjacksHut':
+        resources.push({'resource': 'wood', 'amount': Math.ceil(25 * Math.pow(level, 1.73))});
+        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(9 * Math.pow(level - 1, 1.73))});}
+      break;
+      case 'warehouse':
+        resources.push({'resource': 'wood', 'amount': Math.ceil(30 * Math.pow(level, 1.73))});
+        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(10 * Math.pow(level - 1, 1.73))});}
+      break;
+      case 'stoneQuarry':
+        resources.push({'resource': 'wood', 'amount': Math.ceil(35 * Math.pow(level, 1.73))});
+        if (level >= 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(11 * Math.pow(level - 1, 1.73))});}
       break;
     }
   return resources;

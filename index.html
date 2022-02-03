@@ -10,34 +10,34 @@
 <body>
 <div class="box flow-column">
     <div class="row header">
-    <h1>Idle Empire</h1>
+    <h1>idle empire</h1>
     <div class="topnav" id="topMenu">
         <a href="javascript:void(0);" class="icon" onclick="topnavMenu()">
         <i class="fa fa-bars"></i></a>
-        <a id="tabHearth" onclick="tab('hearth')">Hearth</a>
-        <a id="tabBuildings" onclick="tab('buildings')">Buildings</a>
-        <a id="tabPopulation" onclick="tab('population')">Population</a>
-        <a id="tabResearch" onclick="tab('research')">Research</a>
-        <a id="tabReset" onclick="reset()">Reset game</a>
+        <a id="tabHearth" onclick="tab('hearth')">hearth</a>
+        <a id="tabBuildings" onclick="tab('buildings')">buildings</a>
+        <a id="tabPopulation" onclick="tab('population')">population</a>
+        <a id="tabResearch" onclick="tab('research')">research</a>
+        <a id="tabReset" onclick="reset()">reset game</a>
     </div>
     </div>
     <div class="row content">
         <div id="resourcebar">
-            <h2>Resources</h2>
+            <h2>resources</h2>
             <div id="resourceBarContents"></div>
         </div>
 
         
         <div class="notresourcebar"><div class="main">
             <div id="hearth" class="subpage">
-                <h2>Hearth</h2>
+                <h2>hearth</h2>
                 <div class="pageContent" id="resourcePage">
 
                 </div>
             </div>
 
             <div id="population" class="subpage">
-                <h2>Population management</h2>
+                <h2>population management</h2>
                 
                 <div id="popmanagement">
                     <div class="btn" style="width:300px; float: right;" onclick="increasePopulation()">
@@ -57,14 +57,14 @@
             </div>
 
             <div id="buildings" class="subpage">
-                <h2>Buildings</h2>
+                <h2>buildings</h2>
                 <div class="pageContent" id="buildingsList">
 
                 </div>
             </div>
 
             <div id="research" class="subpage">
-                <h2>Research</h2>
+                <h2>research</h2>
                 <div class="pageContent">
                     
                 </div>
@@ -72,7 +72,12 @@
 
         </div>
         <div class="gameLog">
-            <h2>Game Log</h2>
+            <h2>info</h2>
+            <p>This empire lasts for:</p>
+            <p id="time" align="right">0 days</p>
+            <p>Current season:</p>
+            <p id="season" align="right">Spring</p>
+            <h2>game log</h2>
             <div id="gameLogContent">
             </div>
         </div></div>

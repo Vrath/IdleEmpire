@@ -248,6 +248,9 @@ p{
     flex-direction: column;
     flex-wrap: nowrap;
 }
+.gameLog p{
+    margin: 0 10px;
+}
 #gameLogContent{
     height: 100%;
     min-height: 240px;

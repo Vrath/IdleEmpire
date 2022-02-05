@@ -1,6 +1,6 @@
 "use strict";
 
-document.getElementById('version').innerText = "0.0.9"
+document.getElementById('version').innerText = "0.0.10"
 // (9+X) ^ 2 / 100 * log10(9+X)
 
 let gameData;
@@ -15,8 +15,10 @@ let initialGameData = {
     amt: 0,
     max: 0,
     workers: 0,
-    nextCost: 10,
-    foodUsage: 0
+    // nextCost: 10,
+    foodUsage: 0,
+    happiness: 0,
+    happinessMultiplier: 1
   },
   buildings: {
     granary: {
@@ -77,6 +79,13 @@ let initialGameData = {
       pps: 0,
       unlocked: false
     }
+  },
+  research: {
+    mining: {
+      unlocked: false,
+      completed: false,
+      research: 0
+    }
   }
 };
 
@@ -121,6 +130,12 @@ const buildings = {
     type: "population",
     description: "Upgrading this building increases your maximum population."
   },
+  library: {
+    buildingId: "library",
+    displayName: "Library",
+    type: "research",
+    description: "Upgrading this building lets your researchers do research more effectively."
+  },
   granary: {
     buildingId: "granary",
     displayName: "Granary",
@@ -156,18 +171,17 @@ const buildings = {
     displayName: "Stone Quarry",
     type: "stone",
     description: "Upgrading this building lets your stone miners produce stone more effectively."
-  },
-  library: {
-    buildingId: "library",
-    displayName: "Library",
-    type: "research",
-    description: "Upgrading this building lets your researchers do research more effectively."
   }
 }
 
 const research = {
-
+  mining: {
+    researchId: "mining",
+    displayName: "Mining",
+    description: "Allows you to mine for basic resources."
+  }
 }
+
 
 //navigation
 function topnavMenu() {
@@ -246,6 +260,7 @@ if (savegame !== null) {
 }
 
 //TIME LOOP
+const resourceKeys = Object.keys(gameData.resources);
 
 let dayLoop = window.setInterval(function() {
   let time = gameData.time;
@@ -253,12 +268,7 @@ let dayLoop = window.setInterval(function() {
   //production 
   Object.values(production).forEach(p =>{
     let res = gameData.resources[p.resource];
-    if (p.name ="food" && time.season == "winter"){
-      res.amt += res.pps * 0.5;
-    }
-    else {
-      res.amt += res.pps;
-    }
+    res.amt += res.pps
   })
   //calendar tick
   time.day++;
@@ -278,6 +288,18 @@ let dayLoop = window.setInterval(function() {
 
   //food usage
   gameData.resources.food.amt -= gameData.population.foodUsage;
+  //if you don't have enough food...
+  if (gameData.population.foodUsage > gameData.resources.food.amt){
+    gameLog("Your people are starving!");
+    killRandom();
+  }
+
+  //population increase
+  if (gameData.population.amt < gameData.population.max && gameData.population.happiness >= 0.5){
+    if(Math.random()<(gameData.population.happiness/10)){
+      gameData.population.amt++;
+    }
+  }
 
   localStorage.setItem("idleEmpireSave", JSON.stringify(gameData))
   updateAll();
@@ -295,7 +317,7 @@ function updateAll() {
   document.getElementById("season").innerHTML = season.charAt(0).toUpperCase() + season.slice(1);
 
   document.getElementById("pop").innerHTML = "Population: " + gameData.population.amt + "/" + gameData.population.max;
-  document.getElementById("popCost").innerHTML = "Cost: " + gameData.population.nextCost + " food";
+  //document.getElementById("popCost").innerHTML = "Cost: " + gameData.population.nextCost + " food";
   let foodUsage = gameData.population.amt * Math.log10(9 + gameData.population.amt);
   gameData.population.foodUsage = foodUsage;
   foodUsage = parseFloat(foodUsage.toFixed(2));
@@ -304,15 +326,18 @@ function updateAll() {
   Object.values(production).forEach(p =>{
     //resource count
     let res = gameData.resources[p.resource];
-    res.pps = Math.pow(1 + (10 / p.progReq), 0.95 + 0.05*gameData.buildings[p.prodBuilding].level) * res.workers;
+    if (p.name ="food" && gameData.time.season == "winter"){
+      res.pps = Math.pow(1 + (10 / p.progReq), 0.95 + 0.05*gameData.buildings[p.prodBuilding].level) * res.workers * gameData.population.happinessMultiplier * 0.5;
+    }
+    else{
+      res.pps = Math.pow(1 + (10 / p.progReq), 0.95 + 0.05*gameData.buildings[p.prodBuilding].level) * res.workers * gameData.population.happinessMultiplier;
+    }
 
     let amt = gameData.resources[p.resource].amt;
     let max = gameData.resources[p.resource].max;
     if (gameData.resources[p.resource].amt > gameData.resources[p.resource].max){gameData.resources[p.resource].amt = gameData.resources[p.resource].max}
     amt = amt.toFixed(0);
     document.getElementById(p.resource).innerHTML = `${p.displayName}: <span style="float: right">${amt}/${gameData.resources[p.resource].max}</span>`;
-    //gathering progress
-    //document.getElementById(p.progId).innerHTML = percentify(gameData.resources[p.resource].prog, production[p.resource].progReq);
     //workers
     document.getElementById(p.workers).innerHTML = production[p.resource].workers + ": " + gameData.resources[p.resource].workers;
     //production per second
@@ -334,7 +359,28 @@ function updateAll() {
       document.getElementById(b.buildingId + "Costs").appendChild(element);
     })
   })
- 
+  
+  //happiness
+  gameData.population.happiness = 0;
+  if(gameData.population.amt < gameData.population.max){gameData.population.happiness += (gameData.population.max - gameData.population.amt) / 5}
+  if(gameData.resources.food.pps > gameData.population.foodUsage){gameData.population.happiness += (gameData.resources.food.pps / (gameData.population.foodUsage +1))}
+  else if (gameData.population.foodUsage > gameData.resources.food){gameData.population.happiness -= (gameData.population.foodUsage / (gameData.resources.food.pps +1))}
+
+  gameData.population.happiness = parseFloat((gameData.population.happiness).toFixed(2));
+  document.getElementById("happiness").innerHTML = gameData.population.happiness + ` (${gameData.population.happinessMultiplier}x)`;
+
+  //happiness multiplier
+  if (gameData.population.happiness >= 10){gameData.population.happinessMultiplier = 1.5}
+  else if (gameData.population.happiness >= 5){gameData.population.happinessMultiplier = 1.25}
+  else if (gameData.population.happiness >= 4){gameData.population.happinessMultiplier = 1.2}
+  else if (gameData.population.happiness >= 3){gameData.population.happinessMultiplier = 1.15}
+  else if (gameData.population.happiness >= 2){gameData.population.happinessMultiplier = 1.1}
+  else if (gameData.population.happiness >= 1.5){gameData.population.happinessMultiplier = 1.05}
+  else if (gameData.population.happiness >= 0.5){gameData.population.happinessMultiplier = 1}
+  else if (gameData.population.happiness >= 0){gameData.population.happinessMultiplier = 0.9}
+  else if (gameData.population.happiness >= -1){gameData.population.happinessMultiplier = 0.75}
+  else {gameData.population.happinessMultiplier = 0.5}
+
   checkUnlocks();
 }
 
@@ -378,7 +424,7 @@ function workerGen() {
     element.style.margin = "10px";
     element.style.width = "240px";
     element.style.display = "none";
-    element.classList.add = "worker";
+    element.classList.set = "worker";
     element.resource = p.resource;
     element.id = p.resource + "Worker"
     element.innerHTML = `<h3 id="${p.workers}"></h3>
@@ -415,7 +461,6 @@ function buildingsGen() {
   })
 }
 
-
 //resource bar gen
 function resourceGen() {
   Object.values(production).forEach(p =>{
@@ -424,6 +469,13 @@ function resourceGen() {
       element.classList.add("res");
       document.getElementById("resourceBarContents").appendChild(element);
       document.getElementById(p.resource).style.display = "none";
+  })
+}
+//research gen
+function researchGen(){
+  Object.values(research).forEach(r =>{
+    let element = document.createElement("div");
+    element.id = r.researchId + ""
   })
 }
 
@@ -437,14 +489,14 @@ function gameLog(message) {
 
 // --- POPULATION ---
 //population management
-function increasePopulation() {
-  if (gameData.resources.food.amt >= gameData.population.nextCost && gameData.population.amt < gameData.population.max){
-    gameData.resources.food.amt = gameData.resources.food.amt - gameData.population.nextCost;
-    gameData.population.nextCost = Math.ceil(gameData.population.nextCost*1.53);
-    gameData.population.amt ++;
-    updateAll();
-  }
-}
+// function increasePopulation() {
+//   if (gameData.resources.food.amt >= gameData.population.nextCost && gameData.population.amt < gameData.population.max){
+//     gameData.resources.food.amt = gameData.resources.food.amt - gameData.population.nextCost;
+//     gameData.population.nextCost = Math.ceil(gameData.population.nextCost*1.53);
+//     gameData.population.amt ++;
+//     updateAll();
+//   }
+// }
 
 function hire(type, amt){
   if (amt > 0 && gameData.population.workers < gameData.population.amt){
@@ -456,6 +508,19 @@ function hire(type, amt){
     gameData.population.workers--;
   }
   updateAll();
+}
+
+function killRandom(){
+  if (gameData.population.workers < gameData.population.amt){
+    gameData.population.amt--;
+    return;
+  }
+  let randomWorker = gameData.resources[resourceKeys[Math.floor(Math.random() * resourceKeys.length)]];
+  if (randomWorker.workers > 0){
+    randomWorker.workers--;
+    gameData.population.amt--;
+  }
+  else{killRandom();}
 }
 
 // --- UNLOCKING STUFF ---
@@ -530,6 +595,9 @@ function checkUnlocks(){
   if (gameData.resources.stone.amt > 0 || gameData.buildings.library.unlocked == true){
     unlockBuilding("library");
   }
+  if (gameData.buildings.library.level >= 1){
+    unlockTab("tabResearch");
+  }
 }
 
 // --- BUILDINGS & UPGRADES ---
@@ -540,7 +608,7 @@ function upgradeBuilding(building){
     let level = gameData.buildings[building].level;
     switch (building) {
       case 'granary':
-        gameData.resources.food.max += 10 * Math.round(Math.pow(level, 1.4));
+        gameData.resources.food.max += 10 * Math.round(Math.pow(level, 1.5));
         if (level == 1){unlockResource("food"); unlockBtn("foodBtn")}
       break;
       case 'woodShed':
@@ -556,7 +624,7 @@ function upgradeBuilding(building){
         if (level == 1){unlockWorker("wood")}
       break;
       case 'stoneyard':
-        gameData.resources.stone.max += 10 * Math.round(Math.pow(level, 1.45));
+        gameData.resources.stone.max += 10 * Math.round(Math.pow(level, 1.40));
       break;
       case 'library':
         if (level == 1){unlockTab("tabResearch")}
@@ -571,12 +639,12 @@ function getUpgradeCost(building){
   const resources = [];
     switch (building) {
       case 'woodShed':
-        resources.push({'resource': 'wood', 'amount': Math.ceil(10 * Math.pow(level-1, 1.43) + 10)});
-        if (level > 3) {resources.push({'resource': 'stone', 'amount': Math.ceil(5 * Math.pow(level - 3, 1.43))});}
+        resources.push({'resource': 'wood', 'amount': Math.ceil(gameData.resources.wood.max * 0.85) + 1});
+        if (level > 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(5 * Math.pow(level - 2, 1.43))});}
       break;
       case 'granary':
         resources.push({'resource': 'wood', 'amount': Math.ceil(15 * Math.pow(level, 1.43))});
-        if (level > 3) {resources.push({'resource': 'stone', 'amount': Math.ceil(6 * Math.pow(level - 3, 1.43))});}
+        if (level > 2) {resources.push({'resource': 'stone', 'amount': Math.ceil(6 * Math.pow(level - 2, 1.43))});}
       break;
       case 'houses':
         resources.push({'resource': 'wood', 'amount': Math.ceil(20 * Math.pow(level, 1.73))});
@@ -592,15 +660,15 @@ function getUpgradeCost(building){
       break;
       case 'stoneyard':
         resources.push({'resource': 'wood', 'amount': Math.ceil(35 * Math.pow(level, 1.43))});
-        if (level > 1) {resources.push({'resource': 'stone', 'amount': Math.ceil(10 * Math.pow(level - 1, 1.43))});}
+        if (level > 1) {resources.push({'resource': 'stone', 'amount': Math.ceil(gameData.resources.stone.max * 0.85) + 1});}
       break;
       case 'quarry':
         resources.push({'resource': 'wood', 'amount': Math.ceil(40 * Math.pow(level, 1.73))});
-        if (level > 1) {resources.push({'resource': 'stone', 'amount': Math.ceil(11 * Math.pow(level - 1, 1.73))});}
+        if (level > 1) {resources.push({'resource': 'stone', 'amount': Math.ceil(12 * Math.pow(level - 1, 1.73))});}
       break;
       case 'library':
         resources.push({'resource': 'wood', 'amount': Math.ceil(45 * Math.pow(level, 1.73))});
-        resources.push({'resource': 'stone', 'amount': Math.ceil(12 * Math.pow(level, 1.73))});
+        resources.push({'resource': 'stone', 'amount': Math.ceil(14 * Math.pow(level, 1.73))});
       break;
     }
   return resources;
@@ -636,3 +704,5 @@ function payIfPossible(resources){
   }
   return false;
 }
+
+// RESEARCH

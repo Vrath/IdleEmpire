@@ -38,7 +38,7 @@ body {
 
 .box .row.content {
   flex: 1 1 auto;
-  height:     auto;
+  height: auto;
   min-height: 100%;
   display: flex;
   width: 100%;
@@ -52,10 +52,10 @@ body {
 }
 
 .subpage{
-    height:     auto;
+    height: auto;
     min-height: 100%;
-    margin:     0px auto;
-    padding:    0px auto;
+    margin: 0px auto;
+    padding: 0px auto;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -76,6 +76,7 @@ body {
 #popmanagement p, #popmanagement .btn{
     margin: 5px;
 }
+
 /* TEXT FORMATTING */
 
 h1 {
@@ -93,7 +94,7 @@ h2{
     text-shadow: 5px 5px 10px black;
     width: 100%;
 }
-h2:after, #popmanagement:after{
+h2:after{
     content:' ';
     display:block;
     border:1px solid gray;
@@ -233,8 +234,30 @@ p{
 }
 
 /* POPULATION */
+#popmanagement{
+    width: 30%;
+}
+#workerList{
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
 #workerList p{
     float: right;
+}
+/* RESEARCH */
+#researchContent{
+    display: flex;
+    flex-direction: row;
+    min-height: 100%;
+    height: 20;
+}
+.column{
+    float: left;
+    min-height: 100%;
+    width: 50%;
 }
 
 /* GAME LOG */
@@ -264,7 +287,7 @@ p{
 }
 
 /* RESPONSIVE STUFF */
-/* for mobile phones */
+/* for phones */
 @media screen and (max-width: 600px) {
     .topnav a:not(:first-child) {display: none;}
     h1{
@@ -297,6 +320,22 @@ p{
         height: fit-content;
         flex-direction: column;
     }
+    .column{
+        width: 100%;
+    }
+    #popmanagement{
+        width: 100%;
+    }
+    #popmanagement:after{
+        content:' ';
+        display:block;
+        border:1px solid gray;
+        margin:5px;
+        box-shadow: 1px 1px 3px black;
+    }
+    #workerList{
+        width: 100%;
+    }
 }
 /* for medium sized devices */
 @media screen and (min-width:600px) and (max-width:1000px){
@@ -319,6 +358,19 @@ p{
     }
     .building{
         min-width: 100%;
+    }
+    #popmanagement{
+        width: 100%;
+    }
+    #popmanagement:after{
+        content:' ';
+        display:block;
+        border:1px solid gray;
+        margin:5px;
+        box-shadow: 1px 1px 3px black;
+    }
+    #workerList{
+        width: 100%;
     }
 }
 

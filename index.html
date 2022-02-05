@@ -38,20 +38,22 @@
 
             <div id="population" class="subpage">
                 <h2>population management</h2>
-                
-                <div id="popmanagement">
-                    <div class="btn" style="width:300px; float: right;" onclick="increasePopulation()">
-                        <h3>Increase population</h3>
-                        <p id="popCost">Cost: 5 food</p>
+                <div class="pageContent">
+                    <div class="column" id="popmanagement">
+                        <!-- <div class="btn" style="width:90%; margin: auto;" onclick="increasePopulation()">
+                            <h3>Increase population</h3>
+                            <p id="popCost">Cost: 5 food</p>
+                        </div> -->
+                        <h3>population info</h3>
+                        <p id="pop">Total population: 0/5</p>
+                        <p>Happiness: <span id="happiness">0</span></p>
+                        <p id="foodUsage">Food usage: 0/s</p>
+                        <p id="workers">Workers & unemployed: 0 | 0</p>
                     </div>
-                    <p id="pop">Total population: 0/5</p>
-                    <p id="workers">Total amount of workers: 0</p>
-                    <p id="foodUsage">Food usage: 0/s</p>
+                    <div class="column" id="workerList">
                     
-                </div>
+                    </div>
 
-                
-                <div class="pageContent" id="workerList">
                 </div>
                 
             </div>
@@ -59,14 +61,17 @@
             <div id="buildings" class="subpage">
                 <h2>buildings</h2>
                 <div class="pageContent" id="buildingsList">
-
                 </div>
             </div>
 
             <div id="research" class="subpage">
-                <h2>research</h2>
-                <div class="pageContent">
-                    
+                <div class="pageContent" id="researchContent">
+                    <div class="column">
+                        <h2>available research</h2>
+                    </div>
+                    <div class="column">
+                        <h2>completed</h2>
+                    </div>
                 </div>
             </div>
 
